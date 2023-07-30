@@ -2,12 +2,15 @@ import { type User } from "../../types.d";
 import './UsersList.css';
 
 interface Props {
-    showColors: boolean
     users: User[]
+    showColors: boolean
+    deleteUser: (uuid: string) => void
 }
 
-export function UsersList({ showColors, users }: Props) {
+export function UsersList({ users, showColors, deleteUser }: Props) {
     const classShowColor = showColors ? 'table--showColors' : '';
+
+    const handlerDeleteUser = (uuid: string) => () => deleteUser(uuid);
 
     return (
         <table width='100%'>
@@ -33,7 +36,7 @@ export function UsersList({ showColors, users }: Props) {
                         <td>{user.name.last}</td>
                         <td>{user.location.country}</td>
                         <td>
-                            <button>Borrar</button>
+                            <button onClick={handlerDeleteUser(user.login.uuid)}>Eliminar</button>
                         </td>
                     </tr>
                 )}
