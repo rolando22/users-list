@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { UsersList } from './components';
 import { User } from './types';
 import './App.css';
@@ -7,6 +7,7 @@ export function App() {
     const [users, setUsers] = useState<User[]>([]);
     const [showColors, setShowColors] = useState(false);
     const [sortedByCountry, setSortedByCountry] = useState(false);
+    const [filterCountry, setFilterCountry] = useState('');
     const origialUsers = useRef<User[]>([]);
 
     useEffect(() => {
@@ -25,10 +26,16 @@ export function App() {
     const toggleShowColors = () => setShowColors(!showColors);
     const toogleSortByCountry = () => setSortedByCountry(!sortedByCountry);
     const handlerOnClickResetUsers = () => setUsers(origialUsers.current);
+    const handlerOnChangeSetFilterCountry = (event: React.ChangeEvent<HTMLInputElement>) => 
+        setFilterCountry(event.target.value);
+
+    const filteredUsers = filterCountry.length > 0
+        ? users.filter(user => user.location.country.toLocaleLowerCase().includes(filterCountry.toLocaleLowerCase()))
+        : users;
 
     const sortedUsers = sortedByCountry
-        ? [...users].sort((a, b) => a.location.country.localeCompare(b.location.country))
-        : users;
+        ? [...filteredUsers].sort((a, b) => a.location.country.localeCompare(b.location.country))
+        : filteredUsers;
 
     const deleteUser = (uuid: string) => {
         const newUsers = users.filter(user => user.login.uuid !== uuid);
@@ -42,12 +49,20 @@ export function App() {
                 <button onClick={toggleShowColors}>Colorear Filas</button>
                 <button onClick={toogleSortByCountry}>{sortedByCountry ? 'No ordenar por país' : 'Ordenar por país'}</button>
                 <button onClick={handlerOnClickResetUsers}>Resetear estado</button>
+                <input 
+                    type='text' 
+                    value={filterCountry}
+                    placeholder='Filtra por país'
+                    onChange={handlerOnChangeSetFilterCountry}
+                />
             </header>
-            <UsersList 
-                users={sortedUsers} 
-                showColors={showColors}
-                deleteUser={deleteUser}
-            />
+            <main>
+                <UsersList 
+                    users={sortedUsers} 
+                    showColors={showColors}
+                    deleteUser={deleteUser}
+                />
+            </main>
         </>
     );
 }
