@@ -5,6 +5,7 @@ import './App.css';
 
 export function App() {
     const [users, setUsers] = useState<User[]>([]);
+    const [showColors, setShowColors] = useState(false);
 
     useEffect(() => {
         (async () => {
@@ -18,10 +19,18 @@ export function App() {
         })();
     }, []);
 
+    const toggleShowColors = () => setShowColors(!showColors);
+
     return (
         <>
             <h1>Lista de Usuarios</h1>
-            <UsersList users={users} />
+            <header>
+                <button onClick={toggleShowColors}>Colorear Filas</button>
+            </header>
+            <UsersList 
+                showColors={showColors}
+                users={users} 
+            />
         </>
     );
 }

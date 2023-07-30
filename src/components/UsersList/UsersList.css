@@ -1,0 +1,8 @@
+.table--showColors tr:nth-child(odd) {
+    background-color: #333;
+}
+
+.table--showColors tr:nth-child(even) {
+    background-color: #555;
+}
+
