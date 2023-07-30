@@ -6,6 +6,7 @@ import './App.css';
 export function App() {
     const [users, setUsers] = useState<User[]>([]);
     const [showColors, setShowColors] = useState(false);
+    const [sortedByCountry, setSortedByCountry] = useState(false);
 
     useEffect(() => {
         (async () => {
@@ -20,16 +21,22 @@ export function App() {
     }, []);
 
     const toggleShowColors = () => setShowColors(!showColors);
+    const toogleSortByCountry = () => setSortedByCountry(!sortedByCountry);
+
+    const sortedUsers = sortedByCountry
+        ? [...users].sort((a, b) => a.location.country.localeCompare(b.location.country))
+        : users;
 
     return (
         <>
             <h1>Lista de Usuarios</h1>
             <header>
                 <button onClick={toggleShowColors}>Colorear Filas</button>
+                <button onClick={toogleSortByCountry}>{sortedByCountry ? 'No ordenar por país' : 'Ordenar por país'}</button>
             </header>
             <UsersList 
                 showColors={showColors}
-                users={users} 
+                users={sortedUsers} 
             />
         </>
     );
