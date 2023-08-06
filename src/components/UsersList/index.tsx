@@ -1,25 +1,27 @@
-import { type User } from "../../types.d";
+import { SortBy, type User } from "../../types.d";
 import './UsersList.css';
 
 interface Props {
     users: User[]
     showColors: boolean
     deleteUser: (uuid: string) => void
+    sortBy: (sort: SortBy) => () => void
 }
 
-export function UsersList({ users, showColors, deleteUser }: Props) {
+export function UsersList({ users, showColors, deleteUser, sortBy }: Props) {
     const classShowColor = showColors ? 'table--showColors' : '';
 
     const handlerDeleteUser = (uuid: string) => () => deleteUser(uuid);
+    const handleSortBy = (sort: SortBy) => sortBy(sort);
 
     return (
         <table width='100%'>
             <thead>
                 <tr>
                     <th>Foto</th>
-                    <th>Nombre</th>
-                    <th>Apellido</th>
-                    <th>País</th>
+                    <th onClick={handleSortBy(SortBy.NAME)}>Nombre</th>
+                    <th onClick={handleSortBy(SortBy.LAST)}>Apellido</th>
+                    <th onClick={handleSortBy(SortBy.COUNTRY)}>País</th>
                     <th>Acciones</th>
                 </tr>
             </thead>

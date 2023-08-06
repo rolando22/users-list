@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { UsersList } from './components';
-import { User } from './types';
+import { SortBy, type User } from './types.d';
 import './App.css';
 
 export function App() {
     const [users, setUsers] = useState<User[]>([]);
     const [showColors, setShowColors] = useState(false);
-    const [sortedByCountry, setSortedByCountry] = useState(false);
+    const [sorter, setSorter] = useState<SortBy>(SortBy.NONE);
     const [filterCountry, setFilterCountry] = useState('');
     const origialUsers = useRef<User[]>([]);
 
@@ -24,10 +24,11 @@ export function App() {
     }, []);
 
     const toggleShowColors = () => setShowColors(!showColors);
-    const toogleSortByCountry = () => setSortedByCountry(!sortedByCountry);
     const handlerOnClickResetUsers = () => setUsers(origialUsers.current);
     const handlerOnChangeSetFilterCountry = (event: React.ChangeEvent<HTMLInputElement>) => 
         setFilterCountry(event.target.value);
+    const handlerSorter = (sort: SortBy) => () => 
+        sort === sorter ? setSorter(SortBy.NONE) : setSorter(sort);
 
     const filteredUsers = useMemo(() => {
         return filterCountry.length > 0
@@ -36,10 +37,22 @@ export function App() {
     }, [users, filterCountry]);
 
     const sortedUsers = useMemo(() => {
-        return sortedByCountry
-            ? [...filteredUsers].sort((a, b) => a.location.country.localeCompare(b.location.country))
-            : filteredUsers;
-    }, [filteredUsers, sortedByCountry]);
+
+        if (sorter === SortBy.NONE) return filteredUsers;
+
+        const compareProperties: Record<string, (user: User) => string> = {
+            [SortBy.COUNTRY]: user => user.location.country,
+            [SortBy.NAME]: user => user.name.first,
+            [SortBy.LAST]: user => user.name.last,
+        };
+
+
+        return [...filteredUsers].sort((a, b) => {
+            const extractProperty = compareProperties[sorter];
+            return extractProperty(a).localeCompare(extractProperty(b));
+        });
+
+    }, [filteredUsers, sorter]);
 
     const deleteUser = (uuid: string) => {
         const newUsers = users.filter(user => user.login.uuid !== uuid);
@@ -51,7 +64,7 @@ export function App() {
             <h1>Lista de Usuarios</h1>
             <header>
                 <button onClick={toggleShowColors}>{showColors ? 'Descolorear Filas' : 'Colorear Filas'}</button>
-                <button onClick={toogleSortByCountry}>{sortedByCountry ? 'No ordenar por país' : 'Ordenar por país'}</button>
+                <button onClick={handlerSorter(SortBy.COUNTRY)}>{sorter === SortBy.COUNTRY ? 'No ordenar por país' : 'Ordenar por país'}</button>
                 <button onClick={handlerOnClickResetUsers}>Resetear estado</button>
                 <input 
                     type='text' 
@@ -65,6 +78,7 @@ export function App() {
                     users={sortedUsers} 
                     showColors={showColors}
                     deleteUser={deleteUser}
+                    sortBy={handlerSorter}
                 />
             </main>
         </>
