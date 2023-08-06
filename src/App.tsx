@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { UsersList } from './components';
 import { User } from './types';
 import './App.css';
@@ -29,13 +29,17 @@ export function App() {
     const handlerOnChangeSetFilterCountry = (event: React.ChangeEvent<HTMLInputElement>) => 
         setFilterCountry(event.target.value);
 
-    const filteredUsers = filterCountry.length > 0
-        ? users.filter(user => user.location.country.toLocaleLowerCase().includes(filterCountry.toLocaleLowerCase()))
-        : users;
+    const filteredUsers = useMemo(() => {
+        return filterCountry.length > 0
+            ? users.filter(user => user.location.country.toLocaleLowerCase().includes(filterCountry.toLocaleLowerCase()))
+            : users;
+    }, [users, filterCountry]);
 
-    const sortedUsers = sortedByCountry
-        ? [...filteredUsers].sort((a, b) => a.location.country.localeCompare(b.location.country))
-        : filteredUsers;
+    const sortedUsers = useMemo(() => {
+        return sortedByCountry
+            ? [...filteredUsers].sort((a, b) => a.location.country.localeCompare(b.location.country))
+            : filteredUsers;
+    }, [filteredUsers, sortedByCountry]);
 
     const deleteUser = (uuid: string) => {
         const newUsers = users.filter(user => user.login.uuid !== uuid);
@@ -46,7 +50,7 @@ export function App() {
         <>
             <h1>Lista de Usuarios</h1>
             <header>
-                <button onClick={toggleShowColors}>Colorear Filas</button>
+                <button onClick={toggleShowColors}>{showColors ? 'Descolorear Filas' : 'Colorear Filas'}</button>
                 <button onClick={toogleSortByCountry}>{sortedByCountry ? 'No ordenar por país' : 'Ordenar por país'}</button>
                 <button onClick={handlerOnClickResetUsers}>Resetear estado</button>
                 <input 
