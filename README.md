@@ -1,4 +1,4 @@
-# Repositorio proyecto List of Users con React & TypeScript
+# Repositorio proyecto Users List con React & TypeScript
 
 El proyecto fue creado mientras realizaba el curso de React 2023 de Midudev [RESUELVO PRUEBA TÉCNICA de €55K AL AÑO en Europa | React + TypeScript](https://www.youtube.com/@midulive).
 
@@ -8,7 +8,7 @@ Este repositorio contiene el código de una aplicación de una prueba técnica q
 - Vite como empaquetador y SWC como transpilador.
 - TypeScript para el tipado del código.
 - Uso de useMemo para memoizar el cálculo del filtro y del ordenador.
-- Uso de useRef para guardar una referencia de la lista de usuarios original y poder restaurarlo.
+- Uso de useRef para guardar una referencia de la lista de usuarios original y poder restaurarla.
 - Uso de customHooks para el manejo del estado de users.
 
 Puedes ver el demo aquí: (https://rolando22.github.io/users-list/).
