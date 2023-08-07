@@ -1,30 +1,17 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Header, UsersList } from './components';
+import { useMemo, useState } from 'react';
+import { Error, Header, Loader, UsersList } from './components';
+import { useUsers } from './hooks/useUsers';
 import { SortBy, type User } from './types.d';
 import './App.css';
 
 export function App() {
-    const [users, setUsers] = useState<User[]>([]);
     const [showColors, setShowColors] = useState(false);
     const [sorter, setSorter] = useState<SortBy>(SortBy.NONE);
     const [filterCountry, setFilterCountry] = useState('');
-    const origialUsers = useRef<User[]>([]);
-
-    useEffect(() => {
-        (async () => {
-            try {
-                const res = await fetch('https://randomuser.me/api?results=100');
-                const data = await res.json();
-                setUsers(data.results);
-                origialUsers.current = data.results;
-            } catch (error) {
-                console.log(error);
-            }
-        })();
-    }, []);
+    const { users, deleteUser, resetUsers, loading, error } = useUsers();
 
     const toggleShowColors = () => setShowColors(!showColors);
-    const handlerOnClickResetUsers = () => setUsers(origialUsers.current);
+    const handlerOnClickResetUsers = () => resetUsers();
     const handlerOnChangeSetFilterCountry = (event: React.ChangeEvent<HTMLInputElement>) => 
         setFilterCountry(event.target.value);
     const handlerSorter = (sort: SortBy) => () => 
@@ -37,7 +24,6 @@ export function App() {
     }, [users, filterCountry]);
 
     const sortedUsers = useMemo(() => {
-
         if (sorter === SortBy.NONE) return filteredUsers;
 
         const compareProperties: Record<string, (user: User) => string> = {
@@ -46,18 +32,11 @@ export function App() {
             [SortBy.LAST]: user => user.name.last,
         };
 
-
         return [...filteredUsers].sort((a, b) => {
             const extractProperty = compareProperties[sorter];
             return extractProperty(a).localeCompare(extractProperty(b));
         });
-
     }, [filteredUsers, sorter]);
-
-    const deleteUser = (uuid: string) => {
-        const newUsers = users.filter(user => user.login.uuid !== uuid);
-        setUsers(newUsers);
-    };
 
     return (
         <>
@@ -72,13 +51,17 @@ export function App() {
                 setFilterCountry={handlerOnChangeSetFilterCountry}
             />
             <main>
-                <UsersList 
-                    users={sortedUsers} 
-                    showColors={showColors}
-                    deleteUser={deleteUser}
-                    sortBy={handlerSorter}
-                    sorter={sorter}
-                />
+                {loading && !error && <Loader />}
+                {!loading && error && <Error error={error} />}
+                {!loading && !error && 
+                    <UsersList 
+                        users={sortedUsers} 
+                        showColors={showColors}
+                        deleteUser={deleteUser}
+                        sortBy={handlerSorter}
+                        sorter={sorter}
+                    />
+                }
             </main>
         </>
     );
