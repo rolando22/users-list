@@ -1,3 +1,8 @@
+.UsersList-table thead tr th {
+    border: 1px solid #555;
+    padding: 10px;
+}
+
 .table--showColors tr:nth-child(odd) {
     background-color: #333;
 }

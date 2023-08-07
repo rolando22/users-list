@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { UsersList } from './components';
+import { Header, UsersList } from './components';
 import { SortBy, type User } from './types.d';
 import './App.css';
 
@@ -62,17 +62,15 @@ export function App() {
     return (
         <>
             <h1>Lista de Usuarios</h1>
-            <header>
-                <button onClick={toggleShowColors}>{showColors ? 'Descolorear Filas' : 'Colorear Filas'}</button>
-                <button onClick={handlerSorter(SortBy.COUNTRY)}>{sorter === SortBy.COUNTRY ? 'No ordenar por país' : 'Ordenar por país'}</button>
-                <button onClick={handlerOnClickResetUsers}>Resetear estado</button>
-                <input 
-                    type='text' 
-                    value={filterCountry}
-                    placeholder='Filtra por país'
-                    onChange={handlerOnChangeSetFilterCountry}
-                />
-            </header>
+            <Header 
+                showColors={showColors}
+                filterCountry={filterCountry}
+                sorter={sorter}
+                toggleShowColors={toggleShowColors}
+                sortBy={handlerSorter}
+                resetUsers={handlerOnClickResetUsers}
+                setFilterCountry={handlerOnChangeSetFilterCountry}
+            />
             <main>
                 <UsersList 
                     users={sortedUsers} 

@@ -1,4 +1,4 @@
-import { SortBy, type User } from "../../types.d";
+import { SortBy, type User } from '../../types.d';
 import './UsersList.css';
 
 interface Props {
@@ -15,7 +15,7 @@ export function UsersList({ users, showColors, deleteUser, sortBy }: Props) {
     const handleSortBy = (sort: SortBy) => sortBy(sort);
 
     return (
-        <table width='100%'>
+        <table className='UsersList-table' width='100%'>
             <thead>
                 <tr>
                     <th>Foto</th>

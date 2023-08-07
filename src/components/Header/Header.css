@@ -1,0 +1,19 @@
+.Header {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+.Header input {
+    width: 150px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 2px solid #333;
+}
+
+@media (max-width: 600px) {
+    .Header {
+        flex-direction: column;
+    }
+}
