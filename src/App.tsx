@@ -77,6 +77,7 @@ export function App() {
                     showColors={showColors}
                     deleteUser={deleteUser}
                     sortBy={handlerSorter}
+                    sorter={sorter}
                 />
             </main>
         </>
