@@ -8,7 +8,7 @@ export function App() {
     const [showColors, setShowColors] = useState(false);
     const [sorter, setSorter] = useState<SortBy>(SortBy.NONE);
     const [filterCountry, setFilterCountry] = useState('');
-    const { users, deleteUser, resetUsers, loading, error } = useUsers();
+    const { users, deleteUser, resetUsers, loading, error, nextPage } = useUsers();
 
     const toggleShowColors = () => setShowColors(!showColors);
     const handlerOnClickResetUsers = () => resetUsers();
@@ -16,6 +16,8 @@ export function App() {
         setFilterCountry(event.target.value);
     const handlerSorter = (sort: SortBy) => () => 
         sort === sorter ? setSorter(SortBy.NONE) : setSorter(sort);
+
+    const handlerOnClickNextPage = () => nextPage();
 
     const filteredUsers = useMemo(() => {
         return filterCountry.length > 0
@@ -51,9 +53,7 @@ export function App() {
                 setFilterCountry={handlerOnChangeSetFilterCountry}
             />
             <main>
-                {loading && !error && <Loader />}
-                {!loading && error && <Error error={error} />}
-                {!loading && !error && 
+                {users.length > 0 && 
                     <UsersList 
                         users={sortedUsers} 
                         showColors={showColors}
@@ -62,6 +62,9 @@ export function App() {
                         sorter={sorter}
                     />
                 }
+                {loading && !error && <Loader />}
+                {!loading && error && <Error error={error} />}
+                {!loading && users.length > 0 && <button onClick={handlerOnClickNextPage}>Cargar más resultados</button>}
             </main>
         </>
     );

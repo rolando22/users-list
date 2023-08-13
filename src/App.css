@@ -1,8 +1,12 @@
 #root {
-  width: 980px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-  display: grid;
-  gap: 40px;
+    width: 980px;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+    display: grid;
+    gap: 40px;
+}
+
+main {
+    min-height: 70vh;
 }

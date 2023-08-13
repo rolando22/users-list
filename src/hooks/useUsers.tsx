@@ -6,6 +6,7 @@ export function useUsers() {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
     const origialUsers = useRef<User[]>([]);
 
     useEffect(() => {
@@ -13,16 +14,19 @@ export function useUsers() {
             try {
                 setLoading(true);
                 setError(null);
-                const data = await getUsers();
-                setUsers(data);
-                origialUsers.current = data;
+                const data = await getUsers(currentPage);
+                setUsers(prevUsers => {
+                    const newUsers = prevUsers.concat(data);
+                    origialUsers.current = newUsers;
+                    return newUsers;
+                });
             } catch (error) {
                 setError('Ocurrió un Error');
             } finally {
                 setLoading(false);
             }
         })();
-    }, []);
+    }, [currentPage]);
 
     const deleteUser = (uuid: string) => {
         const newUsers = users.filter(user => user.login.uuid !== uuid);
@@ -31,5 +35,7 @@ export function useUsers() {
 
     const resetUsers = () => setUsers(origialUsers.current);
 
-    return { users, deleteUser, resetUsers, loading, error };
+    const nextPage = () => setCurrentPage(currentPage + 1);
+
+    return { users, deleteUser, resetUsers, loading, error, nextPage };
 }
