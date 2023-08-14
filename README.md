@@ -7,9 +7,9 @@ Este repositorio contiene el código de una aplicación de una prueba técnica q
 - Desarrollada con React para manipulación del DOM y reactividad de la aplicación.
 - Vite como empaquetador y SWC como transpilador.
 - TypeScript para el tipado del código.
+- Uso de TanStack Query para el manejo del estado asíncrono y la paginación.
 - Uso de useMemo para memoizar el cálculo del filtro y del ordenador.
-- Uso de useRef para guardar una referencia de la lista de usuarios original y poder restaurarla.
-- Uso de customHooks para el manejo del estado de users.
+- Uso de customHooks para el manejo del estado asíncrono de users.
 
 Puedes ver el demo aquí: (https://rolando22.github.io/users-list/).
 
