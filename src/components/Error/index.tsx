@@ -1,11 +1,7 @@
 import './Error.css';
 
-interface Props {
-    error: string | null
-}
-
-export function Error({ error }: Props) {
+export function Error() {
     return (
-        <p className='Error'>{error}</p>
+        <p className='Error'>Ha ocurrido un error</p>
     );
 }

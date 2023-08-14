@@ -8,7 +8,7 @@ export function App() {
     const [showColors, setShowColors] = useState(false);
     const [sorter, setSorter] = useState<SortBy>(SortBy.NONE);
     const [filterCountry, setFilterCountry] = useState('');
-    const { users, deleteUser, resetUsers, loading, error, nextPage } = useUsers();
+    const { users, deleteUser, resetUsers, loading, error, fetching, nextPage, hasNextPage } = useUsers();
 
     const toggleShowColors = () => setShowColors(!showColors);
     const handlerOnClickResetUsers = () => resetUsers();
@@ -62,9 +62,11 @@ export function App() {
                         sorter={sorter}
                     />
                 }
-                {loading && !error && <Loader />}
-                {!loading && error && <Error error={error} />}
-                {!loading && users.length > 0 && <button onClick={handlerOnClickNextPage}>Cargar más resultados</button>}
+                {(loading || fetching) && <Loader />}
+                {!loading && error && <Error />}
+                {!(loading || fetching) && !error && hasNextPage === true && 
+                    <button onClick={handlerOnClickNextPage}>Cargar más resultados</button>
+                }
             </main>
         </>
     );

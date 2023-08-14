@@ -1,41 +1,50 @@
-import { useEffect, useRef, useState } from 'react';
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { type User } from '../types.d';
 import { getUsers } from '../services/getUsers';
 
+interface PropsQuery {
+    users: User[], 
+    nextCursor?: number
+}
+
 export function useUsers() {
-    const [users, setUsers] = useState<User[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [currentPage, setCurrentPage] = useState(1);
-    const origialUsers = useRef<User[]>([]);
+    const { isLoading, isError, isFetching, data, refetch, fetchNextPage, hasNextPage } = useInfiniteQuery<PropsQuery>(
+        ['users'],
+        getUsers,
+        {
+            getNextPageParam: (lastPage) => lastPage.nextCursor,
+            refetchOnWindowFocus: false,
+            staleTime: Infinity,
+        }
+    );
+    const users: User[] = data?.pages.flatMap(page => page.users) ?? [];
+    
+    const mutationDeleteUser = async (uuid: string) => uuid;
+    const queryClient = useQueryClient();
+    
+    const { mutate } = useMutation({
+        mutationFn: mutationDeleteUser,
+        onSuccess: (uuid: string) => {
+            queryClient.setQueryData(['users'], (oldData?: { pageParams?: number, pages: PropsQuery[] }) => {
+                if (oldData == null) return
+                oldData?.pages.forEach(page => page.users = page.users.filter(user => user.login.uuid !== uuid));
+                return oldData;
+            });
+        },
+    });
 
-    useEffect(() => {
-        (async () => {
-            try {
-                setLoading(true);
-                setError(null);
-                const data = await getUsers(currentPage);
-                setUsers(prevUsers => {
-                    const newUsers = prevUsers.concat(data);
-                    origialUsers.current = newUsers;
-                    return newUsers;
-                });
-            } catch (error) {
-                setError('Ocurrió un Error');
-            } finally {
-                setLoading(false);
-            }
-        })();
-    }, [currentPage]);
+    const resetUsers = () => refetch();
 
-    const deleteUser = (uuid: string) => {
-        const newUsers = users.filter(user => user.login.uuid !== uuid);
-        setUsers(newUsers);
+    const nextPage = () => fetchNextPage();
+
+    return { 
+        users, 
+        deleteUser: mutate, 
+        resetUsers, 
+        loading: isLoading, 
+        error: isError, 
+        fetching: isFetching, 
+        nextPage, 
+        hasNextPage, 
     };
-
-    const resetUsers = () => setUsers(origialUsers.current);
-
-    const nextPage = () => setCurrentPage(currentPage + 1);
-
-    return { users, deleteUser, resetUsers, loading, error, nextPage };
 }
